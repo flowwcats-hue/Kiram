@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untuk Kamu - Maafin Aku Ya</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* ================= GLOBAL STYLES ================= */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            overflow: hidden; /* Mencegah scroll pada body utama */
+            background-color: #1a1a1a;
+        }
+
+        /* Container utama agar seperti layar HP di desktop, dan full di HP */
+        .app-container {
+            width: 100%;
+            max-width: 480px;
+            height: 100dvh; /* Mengikuti tinggi layar real HP */
+            margin: 0 auto;
+            position: relative;
+            overflow: hidden;
+            background-color: #000;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        /* Halaman / Section */
+        .page {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.8s ease-in-out;
+            z-index: 10;
+        }
+        .page.active {
+            opacity: 1;
+            pointer-events: all;
+            z-index: 20;
+        }
+
+        /* Background Dinamis */
+        .bg-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: -2;
+        }
+        .bg-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Gradient pink/ungu romantis menutupi background */
+            background: linear-gradient(180deg, rgba(235, 78, 142, 0.6) 0%, rgba(93, 38, 193, 0.8) 100%);
+            z-index: -1;
+        }
+
+        /* Animasi Floating Hearts */
+        .floating-heart {
+            position: absolute;
+            bottom: -10%;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 20px;
+            animation: floatUp 5s linear infinite;
+            z-index: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 0; }
+            10% { opacity: 0.8; }
+            90% { opacity: 0.5; }
+            100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; }
+        }
+
+        /* ================= HOME PAGE ================= */
+        .film-strip {
+            position: absolute;
+            top: -10%;
+            left: -20%;
+            width: 50%;
+            height: 120%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: rotate(20deg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 10px;
+            gap: 20px;
+            overflow: hidden;
+        }
+        .polaroid-mock {
+            width: 100px;
+            height: 120px;
+            background: white;
+            padding: 5px;
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        .polaroid-mock .img-mock {
+            width: 100%;
+            height: 80px;
+            background: #a8d5e2; /* Warna placeholder */
+            background-image: linear-gradient(to top, #82b120 30%, #bdecb6 30%); /* Efek gunung/bukit */
+        }
+        
+        .home-content {
+            margin-top: auto;
+            margin-bottom: 20px;
+            z-index: 5;
+            text-align: center;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end; /* Supaya teks di kanan spt di desain */
+        }
+        .home-content h1 {
+            font-family: 'Fredoka One', cursive;
+            color: #ff91e4;
+            font-size: 40px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            margin-bottom: 10px;
+        }
+        .home-content p {
+            color: #fff;
+            text-align: left;
+            width: 60%;
+            font-size: 14px;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.8);
+            margin-bottom: 30px;
+            border-left: 2px solid #fff;
+            padding-left: 10px;
+        }
+        .btn-main {
+            background: linear-gradient(90deg, #d881f8, #f093fb);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 30px;
+            color: white;
+            font-family: 'Fredoka One', cursive;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(216, 129, 248, 0.5);
+            cursor: pointer;
+            align-self: center;
+            transition: transform 0.2s;
+        }
+        .btn-main:active { transform: scale(0.95); }
+
+        /* ================= MESSAGE & STORY PAGES ================= */
+        .page-header {
+            text-align: center;
+            padding: 40px 20px 10px 20px;
+            font-family: 'Fredoka One', cursive;
+            color: #ff9cf1;
+            font-size: 32px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+        }
+        
+        .scroll-text {
+            flex-grow: 1;
+            margin: 20px;
+            padding: 15px;
+            color: #fff;
+            font-size: 15px;
+            line-height: 1.6;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.8);
+            overflow-y: auto;
+            /* Scrollbar styling */
+            scrollbar-width: thin;
+            scrollbar-color: #ff9cf1 transparent;
+        }
+        .scroll-text::-webkit-scrollbar { width: 6px; }
+        .scroll-text::-webkit-scrollbar-thumb { background-color: #ff9cf1; border-radius: 10px; }
+
+        /* Grid Story */
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            padding: 20px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        .story-polaroid {
+            background: #fff;
+            padding: 10px 10px 20px 10px;
+            border-radius: 5px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            transform: rotate(-2deg);
+        }
+        .story-polaroid:nth-child(even) { transform: rotate(3deg); }
+        .story-polaroid img, .story-polaroid .img-mock {
+            width: 100%;
+            height: 120px;
+            background: #a8d5e2;
+            background-image: linear-gradient(to top, #82b120 30%, #bdecb6 30%);
+            object-fit: cover;
+        }
+
+        /* Bottom Controls */
+        .bottom-controls {
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid rgba(255,255,255,0.3);
+            margin: 0 20px 20px 20px;
+            position: relative;
+        }
+
+        /* Nav Buttons */
+        .nav-btn {
+            background: #c979ef;
+            border: none;
+            border-radius: 15px;
+            width: 60px;
+            height: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            font-family: 'Quicksand', sans-serif;
+            font-size: 10px;
+            transition: 0.2s;
+        }
+        .nav-btn:active { transform: scale(0.9); }
+        .nav-btn.hidden { opacity: 0; pointer-events: none; }
+        .nav-btn span.icon { font-size: 18px; line-height: 1; margin-bottom: 2px;}
+
+        /* Visualizer Musik */
+        .visualizer {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+            height: 40px;
+            width: 100px;
+        }
+        .bar {
+            width: 6px;
+            background: #7a82f6;
+            border-radius: 3px;
+            transition: height 0.5s ease, background 0.5s ease;
+            animation: bounce 0.6s infinite alternate ease-in;
+        }
+        /* Delay berbeda untuk setiap bar agar terlihat seperti musik */
+        .bar:nth-child(1) { animation-delay: 0.1s; height: 10px; }
+        .bar:nth-child(2) { animation-delay: 0.3s; height: 20px; background: #9670f5; }
+        .bar:nth-child(3) { animation-delay: 0.0s; height: 35px; background: #b85cf4; }
+        .bar:nth-child(4) { animation-delay: 0.4s; height: 25px; background: #d24ff3; }
+        .bar:nth-child(5) { animation-delay: 0.2s; height: 30px; background: #b85cf4; }
+        .bar:nth-child(6) { animation-delay: 0.5s; height: 15px; background: #9670f5; }
+        .bar:nth-child(7) { animation-delay: 0.1s; height: 10px; }
+
+        @keyframes bounce {
+            0% { transform: scaleY(0.5); }
+            100% { transform: scaleY(1.5); }
+        }
+
+        /* Visualizer mode bentuk LOVE */
+        .visualizer.love-mode .bar {
+            animation: none; /* Matikan animasi lompat */
+            background: #ff4081; /* Ubah jadi warna merah muda/love */
+            transform: scaleY(1);
+        }
+        .visualizer.love-mode .bar:nth-child(1) { height: 20px; }
+        .visualizer.love-mode .bar:nth-child(2) { height: 35px; }
+        .visualizer.love-mode .bar:nth-child(3) { height: 45px; }
+        .visualizer.love-mode .bar:nth-child(4) { height: 30px; } /* Lekukan tengah atas hati */
+        .visualizer.love-mode .bar:nth-child(5) { height: 45px; }
+        .visualizer.love-mode .bar:nth-child(6) { height: 35px; }
+        .visualizer.love-mode .bar:nth-child(7) { height: 20px; }
+        .iya {
+          color: white;
+          text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<audio id="bgMusic" src="https://files.catbox.moe/7cxtoa.mp3" loop></audio>
+
+<div class="app-container" id="app">
+    <div id="heart-container"></div>
+
+    <section id="page-home" class="page active">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/wcdumk.jpg');"></div>
+        <div class="bg-overlay" style="opacity: 0.3;"></div> <div class="film-strip">
+            <div class="polaroid-mock"><img src="https://files.catbox.moe/aymnwn.jpg" class="img-mock"/></div>
+            <div class="polaroid-mock"><img src="https://files.catbox.moe/yfc0zw.jpg" class="img-mock"/></div>
+            <div class="polaroid-mock"><img src="https://files.catbox.moe/pw1pi3.jpg" class="img-mock"/></div>
+            <div class="polaroid-mock"><img src="https://files.catbox.moe/ckoavf.jpg" class="img-mock"/></div>
+            <div class="polaroid-mock"><img src="https://files.catbox.moe/kl4yak.jpg" class="img-mock"/></div>
+            <div class="polaroid-mock"><img src="https://files.catbox.moe/htey6s.jpg" class="img-mock"/></div>
+        </div>
+
+        <div class="home-content">
+            <h1>I Am So Sorry!</h1>
+            <p>
+                Maafin aku ya sayang... Aku sadar aku salah. 
+                Tolong dengerin lagu ini dan baca pesan aku sampai habis. 
+                I love you.
+            </p>
+            <button class="btn-main" onclick="startApp()">Preview</button>
+        </div>
+    </section>
+
+    <section id="page-pesan1" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header">Sorry🙇‍♂️</h2>
+        
+        <div class="scroll-text">
+          Hai sayangggg... 😚
+Aku nulis ini sambil mikirin kamu terus dari tadiiii 💭💗.
+Awalnya aku ngajak kita break sementara waktu puasa 🌙 karna mikirnya murni mau fokus nyari pahala 🤲, tapi aku sadar caraku salahhhh 😞.
+Aku malah bikin kamu overthinking 😣 dan ngerasa aku ngejauh 🚶‍♂️, padahal niatku sama sekali nggak gituuu 🤍.
+Maafin aku ya 🥺 kalau keputusan sepihak itu malah bikin kamu ngerasa sedih 😢 dan sendiriannn 🌧️.
+Ngeliat kamu belakangan ini dry text ke aku 📱, rasanya ada yang kosong dari kesehariankuuuu 🕳️💔.
+Aku kangen bangettt 🥹 sama kamu yang biasanya bawel 🐣, ceria 🌼, dan selalu bikin rame chat kitaaa 🎉.
+Kamu tau kan kalau kamu itu lucu 🐻 dan manis bangettt 🍬?
+Tolong jangan hukum aku pakai diam kamu lagiiii 🤐💦.
+Aku mau kita balik kayak dulu 🔙💞, saling support 🤝 dan ngingetin hal baik 🌟 tanpa harus ada kata pisah sementeraaa 🚫💔.
+Kamu orang yang paling penting buat aku 🏆💖, melebihi apapunnn 🌍.
+Maafin pacarmu yang bodoh ini yaaa 🤦‍♂️💘, I love youuuu ❤️‍🔥.
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn hidden"></button> <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn" onclick="goTo('page-pesan2')">
+                <span class="icon">▶</span>Next
+            </button>
+        </div>
+    </section>
+
+    <section id="page-pesan2" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header" style="font-size: 28px;">
+            Sorry2 🥺💌
+        </h2>
+        
+        <div class="scroll-text">
+Sayangkuuu 💗, aku mau ngomongin soal ucapan kamu tadi yang bilang kamu benci sama akuuu 😿.
+Waktu kamu bilang kamu ngerasa mama kamu lebih sayang sama aku dibanding ke kamu, jujur aku kaget 😳 tapi aku juga paham perasaannnmuuu 🤍.
+Maaf ya kalau kedekatanku sama mama malah bikin kamu ngerasa tersisih 🫂 atau kurang disayanggg 🥀.
+Padahal di mata mama 👩‍👧, kamu itu anak perempuannya yang paling hebat 🌟 dan paling berharga seduniaaa 💎.
+Mungkin cara mama ngungkapinnya beda atau kurang pas 😔, tapi percaya deh ✨, cinta mama ke kamu itu nggak ada tandingannyaaa ♾️💖.
+Sama kayak rasa sayangku ke kamu 💞, yang nggak akan pernah berkurangg 🔒.
+Dulu dari awal kenal kamu itu cuek banget 😶‍🌫️, tapi makin ke sini kamu mulai punya rasa cemburu 😳💭, dan jujur aku malah seneng ngeliatnyaaa 😚.
+Buat aku, cemburu kamu itu tanda kalau kamu beneran sayang 💘 dan takut kehilangan akuuu 🫶.
+Tapi jangan biarkan overthinking kamu 🤯 bikin kamu ngerasa sendirian 🥺 atau nggak disayang lagiii 💔.
+Kamu itu berharga banget 💎, kamu pinter 📚, manis 🍭, dan kamu adalah kebanggaan mama 🌷 dan juga kebanggaankuuu 🥰.
+Kita perbaikin ini sama-sama ya 🤝, aku nggak mau kamu ngerasa insecure lagiii 🫂.
+Aku sayang kamu 💓 dan semua yang ada di dirimuuuu 🌙.
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn" onclick="goTo('page-pesan1')">
+                <span class="icon">◀</span>Previously
+            </button>
+            <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn" onclick="goTo('page-pesan3')">
+                <span class="icon">▶</span>Next
+            </button>
+        </div>
+    </section>
+    <section id="page-pesan3" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header" style="font-size: 28px;">How do I see you?👀</h2>
+        
+        <div class="scroll-text">
+🤍Sayanggg apaa kabarr?? Sorryy yaa amaa sifatt akuu akhirr akhirr inii yangg egoiss dann gakk mauuu mahaminn kamuuu😞, tapii kamuu ituu wanitaa kerennn😉 yangg kuu temuii, kamuuu penyabarr, asikkk, lucuuu, istemewaa, maskipunnn gakk semuanyaaa gakk dapatt dii rasakann secaraaa langsunggg🙄. Tapii ingatt satuu hall akuuu adaaa dii sisii kamuuu🫵, akuu akann selaluu adaa sebagaii kudaaa🐴 yangg membawaaa kamuu keee tujuann kamuuu🐣, akuuu akann berhentiii ketikaa kamuuu menemukan kudaaa lainnn, dann ilanginnn akuu darii hadapannn kamuuu😭. Sepertii kataaa jawaaa "Don't worry, I will always be by your side🧸", dii mataa 👀akuuu kamuuu spesialll💝, kamuuu pengembaliii mooddd💞 akuuu, kamuuu tempattt akuuu larii💖 dariii kejammm nyaaa duniaaa🌏, tapii.. Apaaa kamuuu jugaaa nganggappp akuuu gituuu🤨?? Begitulahhh akuuu selaluu khawatirrr 😖bagaimanaaa kalooo kamuuu gakk anggappp akuuu sebagaiii rumahhh keduaaa☹️. Udaaaa ituuu duluuu lanjuttt scroll halamann nyaaaa🙂‍↔️👉
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn" onclick="goTo('page-pesan2')">
+                <span class="icon">◀</span>Previously
+            </button>
+            <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn" onclick="goTo('page-pesan4')">
+                <span class="icon">▶</span>Next
+            </button>
+        </div>
+    </section>
+    <section id="page-pesan4" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header" style="font-size: 28px;">Promise✌</h2>
+        
+        <div class="scroll-text">👋Hai sayanggg, ini pesan panjang kesekian kalinya dari akuuu👏.
+✏️Nulis semua ini bikin aku sadar betapa banyak hal yang udah kita lewatin 👥sama-samaaa.
+Dari kamu yang bandel😡 dibilangin makan dan cuma bales "yayayaaya", sampai kamu yang curhat nangis soal mamaaa.
+Aku mau minta maaf🙏 dari hati yang paling dalam untuk semua air mata dan dry text❄ yang terjadi akhir-akhir iniiii.
+Janji sama aku ya🤏, mulai sekarang kalau ada yang ngeganjal di hati, langsung omongin aja ke akuuu.🤌
+Jangan disimpen sendiri 😒sampai jadi overthinking yang bikin kamu sakit hatttt💔.
+Aku ini ❤️‍🔥, partner kamu buat cerita❤️‍🩹, bukan cuma sekadar cowok yang disayang mamamuuu.
+Kamu adalah prioritas utamaku🤍, dan aku nggak akan pernah biarin miskomunikasi kayak kemarin ngerusak hubungan kita lagiii💖.
+Tolong ingat selalu kata-kata ini: kamu berharga💖, kamu cukup, dan kamu sangat dicintai💖ii.
+Maafin cowokmu yang kadang sok tau dan kurang peka ini ya sayanggg🙏.
+Aku janji bakal jadi pendengar👂 yang lebih baik dan nggak asal ngajak break lagiii🙌.
+Balik lagi jadi cewek lucuku🌹 yang suka ngetik panjang-panjang ya, miss you so muchhh!🔥
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn" onclick="goTo('page-pesan3')">
+                <span class="icon">◀</span>Previously
+            </button>
+            <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn" onclick="goTo('page-pesan5')">
+                <span class="icon">▶</span>Next
+            </button>
+        </div>
+    </section>
+    <section id="page-pesan5" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header" style="font-size: 28px;">Warning⚠️</h2>
+        
+        <div class="scroll-text">
+          Ciluuukbaaa 👻💞, hai cewek manis yang hobinya telat makannn 🍜⏰!
+Aku kangen banget deh 🥺 ngomelin kamu gara-gara kamu susah kalau disuruh makan tepat waktutuuu 😤🍽️.
+Tiap aku ingetin makan 🗣️, kamu pasti cuma jawab "yayayaaya" 🙄 padahal ujung-ujungnya tetep aja telattt ⌛😩.
+Lucu sih 🐻, ngeselin juga iya 😝, tapi jujur aku kangen banget kebiasaan kecil kita ituuu 🧸💗.
+Akhir-akhir ini chat kita kerasa sepi banget 📭 karena kamu dry text 😶, dan itu bikin aku ngerasa bersalahhhh 😔.
+Aku tau pikiranmu lagi kalut 🌪️, lagi banyak overthinking 🤯 soal kita 💞 dan soal perlakuan mama jugaaa 👩‍👧.
+Tapi tolong dong sayanggg 🥺, se-bete apapun kamu sama aku 😣, kesehatanmu tetap nomor satuuu 🥇💚.
+Jangan biarkan pikiran-pikiran negatif itu ☁️ bikin kamu lupa buat ngerawat diri kamu sendiriii 🌷.
+Kamu harus tau 💌 kalau ngeliat kamu sehat 😄 dan ceria 🌈 itu udah jadi kebahagiaan paling besar buat akuuu 💖.
+Aku minta maaf ya 🙇‍♂️ kalau sempat bikin kamu ragu sama niatku kemarinnn 😞.
+Ayo dong bales chat aku pakai huruf yang panjang-panjang lagi kayak biasanyayyy 📱💬.
+Makan yang banyak ya hari ini 🍱💪, biar kuat maafin pacarmu iniiii 🥹💞.
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn" onclick="goTo('page-pesan4')">
+                <span class="icon">◀</span>Previously
+            </button>
+            <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn" onclick="goTo('page-story')">
+                <span class="icon">▶</span>Next
+            </button>
+        </div>
+    </section>
+    <section id="page-pesan6" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header" style="font-size: 28px;">You Are Special💓</h2>
+        
+        <div class="scroll-text">
+          Hei kesayangankuuuu😘, coba deh kamu inget-inget lagi waktu kita pertama kali dekettt🤔.
+Dulu kamu itu cool 🥶, nggak pernah cemburuan, tapi sekarang liat deh siapa yang sering cemberut kalau aku telat ngabarinnn?🧐
+Jujur, perubahan kamu yang jadi cemburuan itu bikin aku makin sadar kalau aku beruntung🤯 banget bisa dapetin hatimuuuu🥰.
+Kamu punya senyum🤗 yang manis banget, kelakuan yang lucu, yang selalu bisa bikin hari-hariku jadi lebih berwarnaaa.☺
+Aku minta maaf banget 🙏kalau keputusanku buat break puasa kemarin malah nutupin 🙈semua kebahagiaan itu dengan overthinkinggg.
+Niatku cuma mau kita sama-sama dapet pahala 🗿, bukan buat ngurangin porsi bahagiamuuu😥.
+Kalau soal mama, kamu sama sekali nggak perlu ngerasa insecure sayanggg😞.
+Mama sayang sama aku itu karena mama ngeliat aku bisa jagain putri kesayangannya😋, yaitu kamuuu.
+Kamu itu anak yang luar biasa🤩, baik hati🤍, dan selalu punya cara buat bikin orang di sekitarmu ngerasa nyaman🤍.
+Buang jauh-jauh ya pikiran kalau kamu itu nggak disayang atau nggak pantasss❤️‍🩹.
+Kamu lebih dari pantas buat dapetin semua cinta di dunia🌏 iniii.
+Pegang tanganku🤝 lagi ya, kita lewatin masa-masa canggung ini sama-samaaa🌹.
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn" onclick="goTo('page-pesan5')">
+                <span class="icon">◀</span>Previously
+            </button>
+            <div class="visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn" onclick="goTo('page-story')">
+                <span class="icon">▶</span>Next
+            </button>
+        </div>
+    </section>
+
+    <section id="page-story" class="page">
+        <div class="bg-layer" style="background-image: url('https://files.catbox.moe/3kuris.jpg');"></div>
+        <div class="bg-overlay"></div>
+        
+        <h2 class="page-header">STORY</h2>
+        
+        <div class="story-grid">
+            <div class="story-polaroid"><img src="https://files.catbox.moe/aymnwn.jpg" class="img-mock"/></div>
+            <div class="story-polaroid"><img src="https://files.catbox.moe/yfc0zw.jpg" class="img-mock"/></div>
+            <div class="story-polaroid"><img src="https://files.catbox.moe/pw1pi3.jpg" class="img-mock"/></div>
+            <div class="story-polaroid"><img src="https://files.catbox.moe/ckoavf.jpg" class="img-mock"/></div>
+            <div class="story-polaroid"><img src="https://files.catbox.moe/kl4yak.jpg" class="img-mock"/></div>
+            <div class="story-polaroid"><img src="https://files.catbox.moe/htey6s.jpg" class="img-mock"/></div>
+        </div>
+
+        <div class="bottom-controls">
+            <button class="nav-btn" onclick="goTo('page-pesan2')">
+                <span class="icon">◀</span>Previously
+            </button>
+            <div class="visualizer" id="story-visualizer">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <button class="nav-btn hidden"></button> </div>
+            <div id="final-ask" style="text-align: center; margin-top: 20px;">
+    <p style="color: white; font-weight: bold; margin-bottom: 15px;">Jadi, dimaafin nggak nih?</p>
+    <div style="display: flex; justify-content: center; gap: 20px;">
+        <button class="btn-main" style="padding: 10px 25px; font-size: 16px;"><a href="wa.me/6282338354367" class="iya">Iya</a></button>
+        <button id="btn-no" class="btn-main" style="padding: 10px 25px; font-size: 16px; background: #555;" onmouseover="moveButton()">Enggak</button>
+    </div>
+</div>
+    </section>
+</div>
+
+<script>
+    // Memulai Aplikasi (Tombol Preview diklik)
+    function startApp() {
+        // Mainkan lagu
+        const audio = document.getElementById("bgMusic");
+        audio.play().catch(error => {
+            console.log("Audio autoplay diblokir oleh browser. User harus berinteraksi dulu.");
+        });
+
+        // Pindah ke Pesan 1
+        goTo('page-pesan1');
+        
+        // Mulai memunculkan hati-hati berjatuhan
+        createFloatingHearts();
+    }
+
+    // Navigasi antar halaman
+    function goTo(pageId) {
+        // Hilangkan class active dari semua page
+        const pages = document.querySelectorAll('.page');
+        pages.forEach(page => page.classList.remove('active'));
+
+        // Tambahkan class active ke target page
+        document.getElementById(pageId).classList.add('active');
+
+        // Logika khusus untuk Diagram Love di halaman Story
+        const visualizers = document.querySelectorAll('.visualizer');
+        if (pageId === 'page-story') {
+            // Beri jeda sedikit biar dramatis, lalu ubah jadi bentuk hati
+            setTimeout(() => {
+                document.getElementById('story-visualizer').classList.add('love-mode');
+            }, 600);
+        } else {
+            // Jika kembali ke halaman lain, kembalikan diagram jadi musik bergerak
+            visualizers.forEach(vis => vis.classList.remove('love-mode'));
+        }
+    }
+
+    // Membuat efek hati berjatuhan/mengambang secara berkala
+    function createFloatingHearts() {
+        const container = document.getElementById('heart-container');
+        setInterval(() => {
+            const heart = document.createElement('div');
+            heart.classList.add('floating-heart');
+            // Pilih secara acak antara emoji hati, bintang, atau kilauan
+            const symbols = ['💖', '✨', '💕', '🌸']; 
+            heart.innerText = symbols[Math.floor(Math.random() * symbols.length)];
+            
+            // Posisi X secara acak (dari kiri layar)
+            heart.style.left = Math.random() * 100 + 'vw';
+            
+            // Ukuran acak
+            heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
+            
+            // Durasi animasi acak (biar jatuhnya tidak bersamaan)
+            heart.style.animationDuration = (Math.random() * 3 + 4) + 's';
+
+            container.appendChild(heart);
+
+            // Hapus elemen setelah selesai animasi agar memori tidak penuh
+            setTimeout(() => {
+                heart.remove();
+            }, 7000);
+        }, 800); // Munculkan setiap 0.8 detik
+    }
+    // Fungsi supaya tombol "Enggak" lari saat didekati mouse
+function moveButton() {
+    const btnNo = document.getElementById('btn-no');
+    const x = Math.random() * (window.innerWidth - btnNo.offsetWidth);
+    const y = Math.random() * (window.innerHeight - btnNo.offsetHeight);
+    
+    btnNo.style.position = 'fixed';
+    btnNo.style.left = x + 'px';
+    btnNo.style.top = y + 'px';
+}
+
+// Fungsi Typewriter (panggil ini saat pindah halaman)
+function typeWriter(elementId, text, speed = 50) {
+    let i = 0;
+    const element = document.getElementById(elementId);
+    element.innerHTML = ""; // Bersihkan teks dulu
+    
+    function typing() {
+        if (i < text.length) {
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, speed);
+        }
+    }
+    typing();
+}
+</script>
+
+</body>
+</html>
